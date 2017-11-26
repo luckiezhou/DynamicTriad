@@ -2,7 +2,7 @@ from __future__ import print_function
 from __future__ import print_function
 
 import keras.backend as K
-from kerasext import keras_backend_patches
+from core.kerasext import keras_backend_patches
 from keras import optimizers, constraints
 import numpy as np
 import math

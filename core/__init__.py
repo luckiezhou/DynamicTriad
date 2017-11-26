@@ -29,14 +29,14 @@ def main():
     parser.add_argument('--lr', type=float, help="initial learning rate", default=0.1)
     parser.add_argument('--beta', type=float, nargs='+', help="coefficients for components", default=1.0)
     parser.add_argument('--negdup', type=int, help="neg/pos ratio during sampling", default=1)
-    parser.add_argument('--datasetmod', type=str, help='module name for dataset loading', default='dataset.edgelist')
+    parser.add_argument('--datasetmod', type=str, help='module name for dataset loading', default='core.dataset.edgelist')
     parser.add_argument('--validation', type=str, default='link_reconstruction',
                         help=', '.join(list(set(du.TestSampler.tasks) & set(eu.Validator.tasks))))
     args = parser.parse_args()
 
     # some fixed arguments in published code
     args.pretrain_size = args.nsteps
-    args.trainmod = 'algorithm.dynamic_triad'
+    args.trainmod = 'core.algorithm.dynamic_triad'
     args.sampling_args = {}
 
     if args.validation not in du.TestSampler.tasks:
