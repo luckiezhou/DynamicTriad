@@ -16,10 +16,10 @@ def main():
 
     # random.seed(977)  # for reproducability
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument('-I', '--niters', type=int, help="number of iterations", default=150)
+    parser.add_argument('-I', '--niters', type=int, help="number of iterations", default=20)
     parser.add_argument('-m', '--starttime', type=str, help=argparse.SUPPRESS, default=0)
     parser.add_argument('-d', '--datafile', type=str, required=True, help='data file/dir name')
-    parser.add_argument('-b', '--batchsize', type=int, help="batchsize for training", default=100)
+    parser.add_argument('-b', '--batchsize', type=int, help="batchsize for training", default=5000)
     parser.add_argument('-n', '--nsteps', type=int, help="number of time slices", required=True)
     parser.add_argument('-K', '--embdim', type=int, help="number of embedding dimensions", default=48)
     parser.add_argument('-l', '--stepsize', type=int, help="size of slice, in unit decided by dataset", required=True)
@@ -46,16 +46,13 @@ def main():
 
     print("running with options: ", args.__dict__)
 
-
     def load_trainmod(modname):
         mod = importlib.import_module(modname)
         return getattr(mod, 'Model')
 
-
     def load_datamod(modname):
         mod = importlib.import_module(modname)
         return getattr(mod, 'Dataset')
-
 
     def load_or_update_cache(ds, cachefn):
         if cachefn is None:
@@ -77,7 +74,6 @@ def main():
         cPickle.dump(ar, open(cachefn, 'w'))
         print("cache file {} updated".format(cachefn))
 
-
     def export(vertices, data, outdir):
         for i in range(len(data)):
             assert len(vertices) == len(data[i]), (len(vertices), len(data[i]))
@@ -86,7 +82,6 @@ def main():
             for j in range(len(vertices)):
                 print("{} {}".format(vertices[j], ' '.join([str(d) for d in data[i][j]])), file=fh)
             fh.close()
-
 
     TrainModel = load_trainmod(args.trainmod)
     Dataset = load_datamod(args.datasetmod)

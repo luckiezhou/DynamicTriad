@@ -25,7 +25,7 @@ fi
 
 mkdir -p output
 touch output/.dynamic_triad
-python . -I 5 -d data/academic_toy.pickle -n 15 -K 48 -l 4 -s 2 -o output --beta 1 1 --datasetmod core.dataset.citation -m 1980 --cachefn /tmp/citation -b 5000
+python . -I 20 -d data/academic_toy.pickle -n 15 -K 48 -l 4 -s 2 -o output --beta 1 1 --datasetmod core.dataset.citation -m 1980 --cachefn /tmp/citation -b 5000
 python scripts/stdtests.py -f /tmp -d data/academic_toy.pickle -m 1980 -s 4 -l 2 -n 15 -t all --datasetmod core.dataset.citation --cachefn /tmp/citation
 
 popd
