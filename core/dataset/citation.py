@@ -4,8 +4,7 @@ from __future__ import print_function
 import numpy as np
 import re
 from six.moves import cPickle, reduce
-from collections import Counter, defaultdict
-import random
+from collections import Counter
 from dataset_utils import DatasetBase
 import core.gconfig as gconf
 from core import utils, mygraph
@@ -16,9 +15,19 @@ class Dataset(DatasetBase):
     def inittime(self):
         return self.__data['args']['minyear']
 
-    def __init__(self, datafn, localyear, nsteps, stepsize=5, stepstride=1, offset=0):
+    def __init__(self, datafn, localyear=None, nsteps=None, stepsize=None, stepstride=None, offset=0):
         self.datafn = datafn
         self.__data = cPickle.load(open(self.datafn, 'r'))
+
+        nonecnt = sum([int(v is None) for v in (localyear, nsteps, stepsize, stepstride)])
+        if nonecnt == 4:
+            # use information from the data
+            localyear = self.__data['args']['minyear']
+            nsteps = self.__data['args']['maxyear'] - self.__data['args']['minyear'] + 1
+            stepsize = 1
+            stepstride = 1
+        elif nonecnt != 0:
+            raise RuntimeError("You should not specify a part of dataset arguments")
 
         DatasetBase.__init__(self, datafn, localyear, nsteps, stepsize, stepstride, offset)
 
@@ -43,31 +52,6 @@ class Dataset(DatasetBase):
         return self.__data['graphs'][year]
 
     def _merge_unit_graphs(self, graphs, curstep):
-        # nodecnt = graphs['any'].num_vertices()
-        # rawname = graphs['any'].vertex_properties['name']
-        # curunit = self._time2unit(self.step2time(curstep))
-        #
-        # g = gt.Graph(directed=False)
-        # g.add_vertex(nodecnt)
-        # w = g.new_ep('float')
-        # g.edge_properties['weight'] = w
-        # name = g.new_vp('int')
-        # name.a = rawname.a
-        # g.vertex_properties['name'] = name
-        #
-        # print("merging graph from year {} to {}".format(curunit, curunit + self.stepsize - 1))
-        # edge_cache = defaultdict(lambda: 0)
-        # for i in range(len(graphs)):
-        #     wi = graphs[i].edge_properties['weight']
-        #     for e in graphs[i].edges():
-        #         isrc, itgt = int(e.source()), int(e.target())
-        #         isrc, itgt = min(isrc, itgt), max(isrc, itgt)
-        #         edge_cache[(isrc, itgt)] += wi[e]
-        # edgearr = np.zeros((len(edge_cache), 3))
-        # for i, (k, v) in enumerate(edge_cache.items()):
-        #     edgearr[i] = [k[0], k[1], v]
-        # g.add_edge_list(edgearr, eprops=[w])
-
         curunit = self._time2unit(self.step2time(curstep))
         print("merging graph from year {} to {}".format(curunit, curunit + self.stepsize - 1))
 
@@ -76,8 +60,6 @@ class Dataset(DatasetBase):
             ret.merge(g, free_other=False)
 
         return ret
-        # g = gtutils.merge_graph(graphs, graphs['any'].vp['name'], [g.ep['weight'] for g in graphs])
-        # return g
 
     # required by Archivable(Archive and Cache)
     def _full_archive(self, name=None):
@@ -227,6 +209,7 @@ class Dataset(DatasetBase):
             label_names = raw_names
         else:
             lb = rawlb.copy()
+
             # TODO: make sure the order of lb (i.e. order of feat) is 0:nnodes
             def mapper(x):
                 if x == target:
@@ -236,8 +219,6 @@ class Dataset(DatasetBase):
                 else:
                     return -1
             lb = np.vectorize(mapper)(lb)
-            #lb[lb != target] = -1
-            #lb[lb == target] = 1
             label_names = {-1: 'Others', 1: raw_names[target], 0: 'Unknown'}
 
         assert lb.shape == (len(self.gtgraphs), self.gtgraphs['any'].num_vertices()), \
@@ -247,109 +228,3 @@ class Dataset(DatasetBase):
             return utils.OffsetList(self.localstep, len(lb), lb, copy=False), label_names
         else:
             return utils.OffsetList(self.localstep, len(lb), lb, copy=False)
-
-    # TODO: consider moving following code into another module
-    # def vertex_classify_samples(self, begin, end):
-    #     lb = np.array(self.vertex_labels()[begin:end])
-    #     lb = np.reshape(lb, (lb.size, ), order='C')
-    #
-    #     samp = []
-    #     nodecnt = self.gtgraphs['any'].num_vertices()
-    #     for i in range(begin, end):
-    #         samp.append(np.transpose(np.vstack((i * np.ones((nodecnt, ), dtype='int32'),
-    #                                             np.arange(nodecnt, dtype='int32')))))
-    #     samp = np.concatenate(samp, axis=0)
-    #
-    #     assert samp.shape == (lb.shape[0], 2), "{}, {}".format(samp.shape, (lb.shape[0], 2))
-    #     return samp, lb
-    #
-    # # sample_method in 'negsamp', 'changed'
-    # #   negsamp: all samples with proper negative sampling
-    # #   changed: all changed edges
-    # # negrange: used only in negsamp mode, cache to select negative samples from
-    # # TODO: rewrite this with mygraph
-    # def link_predict_samples(self, begin, end, sample_method='negsamp', negrange=None, negdup=1):
-    #     if sample_method == 'negsamp':
-    #         pos = []
-    #         for i, g in enumerate(self.gtgraphs[begin:end]):
-    #             for e in g.edges():
-    #                 if int(e.source()) > int(e.target()):  # because our graph is undirected
-    #                     # check symmetric
-    #                     names = g.vertex_properties['name']
-    #                     assert g.edge(e.target(), e.source()), "{}: {} {}".format(i + begin, names[e.source()],
-    #                                                                               names[e.target()])
-    #                     assert g.edge_properties['weight'][e] == g.edge_properties['weight'][g.edge(e.target(), e.source())]
-    #                     continue
-    #                 pos.append([i + begin, int(e.source()), int(e.target())])
-    #         pos = np.vstack(pos).astype('int32')
-    #
-    #         def make_cache(x):
-    #             cache = []
-    #             g = self.gtgraphs[x]
-    #             all_nodes = set(range(g.num_vertices()))
-    #             for j in range(g.num_vertices()):
-    #                 # TODO: note here we assume undirected graph
-    #                 cache.append(list(all_nodes - set([int(v) for v in g.vertex(j).all_neighbours()])))
-    #             return cache
-    #         if negrange is None:
-    #             negrange = utils.KeyDefaultDict(make_cache)
-    #
-    #         neg = []
-    #         for i in range(negdup):
-    #             for p in pos:
-    #                 tm, src, tgt = p
-    #                 if random.randint(0, 1) == 0:  # replace source
-    #                     cur_range = negrange[tm][tgt]
-    #                     new_src = cur_range[random.randint(0, len(cur_range) - 1)]
-    #                     neg.append([tm, new_src, tgt])
-    #                 else:  # replace target
-    #                     cur_range = negrange[tm][src]
-    #                     new_tgt = cur_range[random.randint(0, len(cur_range) - 1)]
-    #                     neg.append([tm, src, new_tgt])
-    #         neg = np.vstack(neg).astype('int32')
-    #
-    #         lbs = np.concatenate((np.ones(len(pos)), -np.ones(len(neg))))
-    #         return np.concatenate((pos, neg), axis=0), lbs
-    #     elif sample_method == 'changed':
-    #         if end - begin < 2:
-    #             raise RuntimeError("there must be at least 2 graphs in 'changed' sample method")
-    #
-    #         samp, lbs = [], []
-    #         for i in range(begin, end - 1):
-    #             prevg, curg = self.gtgraphs[i], self.gtgraphs[i + 1]
-    #
-    #             def edge_set(g):
-    #                 ret = set()
-    #                 for e in g.edges():
-    #                     s, t = int(e.source()), int(e.target())
-    #                     if s > t:
-    #                         s, t = t, s
-    #                     ret.add((s, t))
-    #                 return ret
-    #
-    #             cure = edge_set(curg)
-    #             preve = edge_set(prevg)
-    #
-    #             for s, t in cure - preve:
-    #                 # i + 1 because i enumerates all prev graphs
-    #                 samp.append([i + 1, s, t])
-    #                 lbs.append(1)
-    #             for s, t in preve - cure:
-    #                 samp.append([i + 1, s, t])
-    #                 lbs.append(-1)
-    #
-    #             if gconf.debug:
-    #                 # only check in debug mode because it is time consuming to call g.edge
-    #                 for i in range(len(samp)):
-    #                     if lbs[i] == 1:
-    #                         assert self.gtgraphs[samp[i][0]].edge(samp[i][1], samp[i][2]) is not None
-    #                     else:
-    #                         assert self.gtgraphs[samp[i][0]].edge(samp[i][1], samp[i][2]) is None
-    #
-    #         samp = np.array(samp)
-    #         lbs = np.array(lbs)
-    #
-    #         return samp, lbs
-    #     else:
-    #         raise NotImplementedError()
-

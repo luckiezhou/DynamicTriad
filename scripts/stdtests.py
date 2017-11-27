@@ -1,6 +1,14 @@
-# inherited from old/stdtest.py
-
 from __future__ import print_function
+
+import sys
+import os
+
+try:
+    import core
+except ImportError:
+    mainpath = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    print("Error while importing core modules, try adding {} to python path".format(mainpath))
+    sys.path.append(mainpath)
 
 import numpy as np
 import argparse
