@@ -25,7 +25,7 @@ def main():
     parser.add_argument('-l', '--stepsize', type=int, help="size of slice, in unit decided by dataset", required=True)
     parser.add_argument('-s', '--stepstride', type=int, help="interval between two slices", required=True)
     parser.add_argument('-o', '--outdir', type=str, required=True, help="output directory name")
-    parser.add_argument('--cachedir', type=str, help="path to store data cache files", default=None)
+    parser.add_argument('--cachefn', type=str, help="prefix for data cache files", default=None)
     parser.add_argument('--lr', type=float, help="initial learning rate", default=0.1)
     parser.add_argument('--beta', type=float, nargs='+', help="coefficients for components", default=1.0)
     parser.add_argument('--negdup', type=int, help="neg/pos ratio during sampling", default=1)
@@ -57,10 +57,10 @@ def main():
         return getattr(mod, 'Dataset')
 
 
-    def load_or_update_cache(ds, cachedir):
-        if cachedir is None:
+    def load_or_update_cache(ds, cachefn):
+        if cachefn is None:
             return
-        cachefn = '{}/{}.cache'.format(cachedir, ds.name)
+        cachefn += '.cache' 
         if isfile(cachefn + '.args'):
             args = cPickle.load(open(cachefn + '.args', 'r'))
             try:
@@ -92,7 +92,7 @@ def main():
     Dataset = load_datamod(args.datasetmod)
 
     ds = Dataset(args.datafile, args.starttime, args.nsteps, stepsize=args.stepsize, stepstride=args.stepstride)
-    load_or_update_cache(ds, args.cachedir)
+    load_or_update_cache(ds, args.cachefn)
     dsargs = {'datafile': args.datafile, 'starttime': args.starttime, 'nsteps': args.nsteps,
               'stepsize': args.stepsize, 'stepstride': args.stepstride, 'datasetmod': args.datasetmod}
     tm = TrainModel(ds, pretrain_size=args.pretrain_size, embdim=args.embdim, beta=args.beta,
@@ -108,7 +108,7 @@ def main():
 
         print("generating validation set")
         validargs = tm.dataset.sample_test_data(args.validation, initstep, initstep + args.pretrain_size, size=10000)
-        print(validargs)
+        #print(validargs)
         print("{} validation samples generated".format(len(validargs[0])))
 
         max_val, max_idx, maxmodel = -1, 0, None
@@ -164,8 +164,7 @@ def main():
 
         print("best validation score at itr {}: {}".format(max_idx, max_val))
         print("{} seconds elapsed for pretraining".format(time.time() - start_time))
-        # lastmodel = tm.save_model()
-        # tm.restore_model(maxmodel)
+        #lastmodel = tm.save_model()  # for debug
         print("saving output to {}".format(args.outdir))
         tm.restore_model(maxmodel)
         tm.pretrain_end()

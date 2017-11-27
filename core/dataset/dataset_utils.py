@@ -287,7 +287,6 @@ class TestSampler(object):
         samples = np.concatenate((possamp, negsamp), axis=0)
         samples[:, 0] += begin  # from begin-based time to 0-based time
         lbs = np.concatenate((np.ones(len(possamp)), -np.ones(len(negsamp))), axis=0)
-        print("sample size = {}".format(len(lbs)))  # for debug
         return [samples, lbs]
     
     def _sample_node_predict(self, begin, end, size=None, name=""):

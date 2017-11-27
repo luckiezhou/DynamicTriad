@@ -104,7 +104,6 @@ class Dataset(DatasetBase):
         self.__vertex_raw_labels_cache, = ar['{}_cache'.format(prefix)]
         if copy:
             self.__vertex_raw_labels_cache = self.__vertex_raw_labels_cache.copy()
-        print(type(self.__vertex_raw_labels_cache))
 
     @property
     def manual_features(self):
@@ -134,7 +133,7 @@ class Dataset(DatasetBase):
                 labels.append(-1)
             else:
                 labels.append(np.argmax(cur))
-        print(Counter(labels))
+        print("label distribution: {}".format(Counter(labels)))
         return np.array(labels)
 
     def __vertex_raw_labels(self, return_name=False):

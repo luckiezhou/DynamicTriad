@@ -251,7 +251,7 @@ if __name__ == '__main__':
         emb = []
         for line in data:
             fields = line.split()
-            emb.append([float(e) for e in fields])
+            emb.append([float(e) for e in fields[1:]])
             # we care not about vertex names because the order in the output files should comply with our ds module
         return np.vstack(emb)
 
@@ -268,7 +268,7 @@ if __name__ == '__main__':
     parser.add_argument('-n', '--nsteps', type=int, required=True, help='#steps to test')
     parser.add_argument('--classifier', type=str, default='lr', help='lr, svm')
     parser.add_argument('--repeat', type=int, default=1, help='number of times to repeat experiment')
-    parser.add_argument('--cachefile', type=str, default=None, help='name of dataset cache file')
+    parser.add_argument('--cachefn', type=str, default=None, help='name of dataset cache file')
     args = parser.parse_args()
 
     args.debug = False
@@ -282,8 +282,8 @@ if __name__ == '__main__':
     # so that it may not be a problem to leave the old cache not removed
     ds = Dataset(args.datafn, args.starttime, args.nsteps,
                  stepsize=args.stepsize, stepstride=args.stepstride)
-    if args.cachefile is not None:
-        load_or_update_cache(ds, args.cachefile)
+    if args.cachefn is not None:
+        load_or_update_cache(ds, args.cachefn)
 
     emb = []
     for i in range(ds.localstep, ds.localstep + args.nsteps):
