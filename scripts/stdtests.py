@@ -254,13 +254,16 @@ if __name__ == '__main__':
         print("cache file {} updated".format(cacheprefix))
 
 
-    def load_embedding(fn):
+    def load_embedding(fn, vs):
         data = open(fn, 'r').read().rstrip('\n').split('\n')
-        emb = []
+        emb = {}
         for line in data:
             fields = line.split()
-            emb.append([float(e) for e in fields[1:]])
-            # we care not about vertex names because the order in the output files should comply with our ds module
+            emb[fields[0]] = [float(e) for e in fields[1:]]
+        # it is possible that the output order differs from :param vs: given different node_type,
+        # so we have to reorder the embedding according to :param vs:
+        emb = [emb[str(v)] for v in vs]
+
         return np.vstack(emb)
 
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -296,7 +299,7 @@ if __name__ == '__main__':
     emb = []
     for i in range(ds.localstep, ds.localstep + args.nsteps):
         fn = "{}/{}.out".format(args.embdir, i - ds.localstep)
-        emb.append(load_embedding(fn))
+        emb.append(load_embedding(fn, ds.mygraphs['any'].vertices()))
     emb = np.stack(emb, axis=0)
     print("embedding shape is {}".format(emb[0].shape))
 

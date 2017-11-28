@@ -20,7 +20,7 @@ class Dataset(DatasetBase):
 
     @property
     def name(self):
-        return "general"
+        return "adjlist"
 
     # required by Timeline
     def _time2unit(self, tm):

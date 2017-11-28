@@ -113,39 +113,3 @@ def load_adjlist(fn, node_type='string', weight_type='float'):
         raise RuntimeError("One-sided edges detected".format(edgeset))
     return g
 
-
-# TODO: this is buggy since node list is not given
-# def load_edgelist(fn, node_type='string', weight_type='float'):
-#     """
-#     loads only undirected graph, if multiple instances of the same edge is detected,
-#     their weights are summed up
-#     :param fn:
-#     :param node_type:
-#     :param weight_type:
-#     :return:
-#     """
-#     py_node_type = type2python(node_type)
-#     py_weight_type = type2python(weight_type)
-#
-#     g = mygraph.Graph('string', 'float')
-#     for line in open(fn, 'r'):
-#         line = line.rstrip('\n').split()
-#         assert len(line) <= 2, "more than 3 components found in line {}".format(line)
-#         line[0], line[1] = py_node_type(line[0]), py_node_type(line[1])
-#
-#         if line[0] == line[1]:
-#             print("[warning] loopback edge {} ignored".format((line[0], line[1])))
-#             continue
-#
-#         if len(line) == 2:
-#             w = py_weight_type(line[2])
-#         else:
-#             w = 1.0
-#
-#         if g.exists(line[0], line[1]):
-#             print("[warning] duplicated edge detected: {}".format(line[0], line[1]))
-#
-#         g.inc_edge(line[0], line[1], w)
-#         g.inc_edge(line[1], line[0], w)
-#
-#     return g

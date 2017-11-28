@@ -58,7 +58,7 @@ class Sampler(pos_neg.Sampler, WithData):
                     sample_round += 1
 
                     # increase the probability of finish sampling in a single round
-                    left_cnt = int(left_cnt * (float(self.__all_trial) / self.__succ_trial + 0.1))
+                    left_cnt = int(left_cnt * (float(self.__all_trial) / self.__succ_trial + 0.2))
                     if left_cnt < 100:
                         left_cnt = 100
                         mapper.njobs = 1
