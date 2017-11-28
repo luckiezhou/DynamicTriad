@@ -26,13 +26,12 @@ except ImportError as e:
     from utils_py import *
 
 
-# TODO: move this into specific implementations later
+# the utilities that have to be implemented in pure python
 import multiprocessing as mp
 import math
 import itertools
 import dill
 import contextlib
-from sklearn.metrics import confusion_matrix
 
 
 def func_wrapper(args):
@@ -40,9 +39,12 @@ def func_wrapper(args):
     return func(mp.current_process()._identity, *args[1:])
 
 
-# work(process, list_of_samples, reportq): map function, maps a sequence of samples to the sequence of results
-# monitor(queue): process monitor function, exit receiveing a StopIteration object
 class ParMap(object):
+    """
+    work(process, list_of_samples, reportq): map function, maps a sequence of samples to the sequence of results
+    monitor(queue): process monitor function, exit receiveing a StopIteration object
+    """
+
     def __init__(self, work, monitor=None, njobs=mp.cpu_count(), maxtasksperchild=100):
         self.work_func = work
         self.monitor_func = monitor
@@ -111,84 +113,3 @@ class ParMap(object):
             monitor.join()
 
         return res
-
-
-def group_by(data, key=lambda x: x):
-    ret = []
-    key2idx = {}
-    for d in data:
-        k = key(d)
-        idx = key2idx.get(k, None)
-        if idx is None:
-            idx = key2idx[k] = len(key2idx)
-            ret.append([])
-        ret[idx].append(d)
-    return ret
-
-
-def confusion_matrix_curve(y):
-    y = np.array(y)
-    assert np.all((y == 1) + (y == -1)), y
-    tp, fp, tn, fn = [0], [0], [np.sum(y == -1)], [np.sum(y == 1)]
-    for i in range(len(y)):
-        if y[i] == 1:
-            tp.append(tp[-1] + 1)
-            fp.append(fp[-1])
-            tn.append(tn[-1])
-            fn.append(fn[-1] - 1)
-        elif y[i] == -1:
-            tp.append(tp[-1])
-            fp.append(fp[-1] + 1)
-            tn.append(tn[-1] - 1)
-            fn.append(fn[-1])
-
-    return tp, fp, tn, fn
-
-
-def ks_curve(lb, score, return_score=False):
-    # sort by p from largest to smallest
-    p, y = zip(*list(sorted(zip(score, lb), key=lambda x: -x[0])))
-    tp, fp, tn, fn = confusion_matrix_curve(y)
-
-    tp = np.array(tp, dtype='float32')
-    fp = np.array(fp, dtype='float32')
-    tn = np.array(tn, dtype='float32')
-    fn = np.array(fn, dtype='float32')
-
-    assert np.all(tp + fn == tp[0] + fn[0])
-    assert np.all(tn + fp == tn[0] + fp[0])
-
-    pos = tp / (tp + fn)
-    neg = 1 - tn / (tn + fp)
-
-    if return_score:
-        return pos, neg, p
-    else:
-        return pos, neg
-
-
-# determine threshold according to training data
-def stdks(train_lb, train_score, test_lb, test_score):
-    trainks = ks_curve(train_lb, train_score, return_score=True)
-    thidx = np.argmax(trainks[0] - trainks[1])
-    sorted_score = trainks[2]
-    if thidx == 0:
-        th = sorted_score[0] + 1
-    elif thidx == len(train_score) + 1:
-        th = sorted_score[-1] - 1
-    else:
-        th = (sorted_score[thidx] + sorted_score[thidx - 1]) / 2
-
-    p = np.sign(test_score - th)
-    cmat = confusion_matrix(test_lb, p, labels=(-1, 1)).astype('float32')
-    tp, fp, tn, fn = cmat[1, 1], cmat[0, 1], cmat[0, 0], cmat[1, 0]
-    pos = tp / (tp + fn)
-    neg = 1 - tn / (tn + fp)
-    return pos - neg
-
-
-# determine threshold according to max ks value
-def maxks(lb, score):
-    pos, neg = ks_curve(lb, score)
-    return np.max(pos - neg)
-
