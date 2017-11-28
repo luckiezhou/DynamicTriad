@@ -41,10 +41,17 @@ boostroot=$(ask "BOOST_ROOT" "")
 export BOOST_ROOT=$boostroot
 
 echo building mygraph module ...
-rm -r core/mygraph-build
+rm -rf core/mygraph-build
 mkdir -p core/mygraph-build
 pushd core/mygraph-build
 cmake ../graph
+make && ln -sf mygraph-build/mygraph.so ../mygraph.so 
+popd
+
+echo building c extensions for dynamic triad ...
+pushd core/algorithm
+rm -rf build && mkdir build && cd build
+cmake ..
 make && make install
 popd
 
