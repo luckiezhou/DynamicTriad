@@ -34,10 +34,10 @@ pyinc=$(python -c "from distutils.sysconfig import get_config_var; print(get_con
 pyinc=$(ask "PYTHON_INCLUDE_DIR?" $pyinc)
 export PYTHON_INCLUDE_DIR=$pyinc
 
-eigeninc=$(ask "EIGEN3_INCLUDE_DIR" /usr/include)
-export EIGEN2_INCLUDE_DIR=$eigeninc
+eigeninc=$(ask "EIGEN3_INCLUDE_DIR?" /usr/include)
+export EIGEN3_INCLUDE_DIR=$eigeninc
 
-boostroot=$(ask "BOOST_ROOT" "")
+boostroot=$(ask "BOOST_ROOT?" "")
 export BOOST_ROOT=$boostroot
 
 echo building mygraph module ...
