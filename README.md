@@ -59,7 +59,7 @@ Given a sequence of undirected graphs, each for a time step, this program can be
 
 ### Data Format
 
-####Input Format 
+#### Input Format 
 
 The input is expected to be a directory containing ``N`` input files named ``0, 1, 2...``, where `N` is the length of the graph sequence. Each file contains an adjacency list of the corresponding graph, and the adjacency list consists of multiple lines, each in the format:
 ```
@@ -137,7 +137,7 @@ We include a toy data set in the ``data`` directory, which is a preprocessed ver
 
 A demo script is available as ``scripts/demo.sh``, which basically does three things:
 
-- Call ``scripts/academic2adjlist.py`` to convert the toy data to the input format described in [Input](#input).
+- Call ``scripts/academic2adjlist.py`` to convert the toy data to the input format described in [Input](#input-format).
 - Call the main script to compute the vertex embeddings and save them to ``output`` directory.
 - Call ``scripts/stdtest.py`` to experiment on standard tasks defined in paper [1].
 
