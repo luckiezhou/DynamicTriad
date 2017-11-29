@@ -247,7 +247,7 @@ if __name__ == '__main__':
                 print("Failed to load cache file {}: {}".format(cacheprefix + '.cache', e.message))
 
         # update cache when load failed
-        print("updating cache file {} for dataset {}".format(cacheprefix, ds.name))
+        print("updating cache for prefix {}".format(cacheprefix))
         ar, args = ds.cache()
         cPickle.dump(args, open(cacheprefix + '.cache.args', 'w'))
         cPickle.dump(ar, open(cacheprefix + '.cache', 'w'))
@@ -280,6 +280,7 @@ if __name__ == '__main__':
     parser.add_argument('--classifier', type=str, default='lr', help='lr, svm')
     parser.add_argument('--repeat', type=int, default=1, help='number of times to repeat experiment')
     parser.add_argument('--cachefn', type=str, default=None, help='name of dataset cache file')
+    # parser.add_argument('--dataname', type=str, default=None, help='name for the current data file')
     args = parser.parse_args()
 
     args.debug = False

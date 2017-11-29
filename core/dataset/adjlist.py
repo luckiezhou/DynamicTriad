@@ -10,11 +10,11 @@ class Dataset(DatasetBase):
     def inittime(self):
         return 0 
 
-    def __init__(self, datafn, localtime, nsteps, stepsize, stepstride, offset=0):
+    def __init__(self, datafn, localtime, nsteps, stepsize, stepstride, offset=0, dataname=None):
         self.datafn = datafn
         self.__datadir = datafn 
 
-        DatasetBase.__init__(self, datafn, localtime, nsteps, stepsize, stepstride, offset)
+        DatasetBase.__init__(self, datafn, localtime, nsteps, stepsize, stepstride, offset, dataname)
 
         self.__vertices = None
 

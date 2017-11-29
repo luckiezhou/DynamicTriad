@@ -7,6 +7,7 @@ import random
 import numpy as np
 from collections import defaultdict
 from six.moves import range
+import os
 
 
 class Timeline(utils.Archivable):
@@ -87,7 +88,7 @@ class Cache(utils.Archivable):
         if self.is_compatible(args):
             self.load_archive(datagen(), copy=False)
         else:
-            raise ValueError("Incompatible args {}".format(args))
+            raise ValueError("Incompatible args {} vs. {}".format(self._cache_args(), args))
 
 
 class DynamicGraph(Timeline, utils.Archivable):
@@ -352,7 +353,7 @@ class TestSampler(object):
 
 
 class DatasetBase(DynamicGraph, Archive, Cache, TestSampler):
-    initarg_names = ['datafn', 'localtime', 'nsteps', 'stepsize', 'stepstride', 'offset']
+    initarg_names = ['datafn', 'localtime', 'nsteps', 'stepsize', 'stepstride', 'offset', 'dataname']
 
     @property
     def inittime(self):
@@ -364,9 +365,14 @@ class DatasetBase(DynamicGraph, Archive, Cache, TestSampler):
     def _cache_args(self):
         cargs = super(DatasetBase, self)._cache_args()
         cargs.update({n: a for a, n in zip(self.initargs, self.initarg_names)})
+        if cargs['dataname'] is not None:
+            del cargs['datafn']  # use name instead of data file name
+        else:
+            del cargs['dataname']
+            cargs['datafn'] = os.path.abspath(cargs['datafn'])  # use absolute path for cache args
         return cargs
 
-    def __init__(self, datafn, localtime, nsteps, stepsize=5, stepstride=1, offset=0):
+    def __init__(self, datafn, localtime, nsteps, stepsize=5, stepstride=1, offset=0, dataname=None):
         DynamicGraph.__init__(self, self.inittime, localtime, nsteps, stepsize, stepstride, offset)
-        self.initargs = [datafn, localtime, nsteps, stepsize, stepstride, offset]
+        self.initargs = [datafn, localtime, nsteps, stepsize, stepstride, offset, dataname]
 

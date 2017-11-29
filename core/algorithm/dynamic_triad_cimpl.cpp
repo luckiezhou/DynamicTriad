@@ -44,28 +44,20 @@ template <typename graph_t> using node_type = typename graph_t::CGraph::node_typ
 template <typename graph_t>
 Tensor1D_Managed X(int a, int b, int c, cgraph_type<graph_t> g, Tensor2D emb, const vector<node_type<graph_t>>& nodenames)
 {
-    //cout << "for debug in X " << a << ' ' << b << ' ' << c << ' ' << nodenames.size() << endl;
-    //cout << nodenames[a] << ' ' << nodenames[b] << ' ' << nodenames[c] << ' ' << (void*)g << endl;
-
     float w1 = g->edge_value(nodenames[a], nodenames[c]);
-    //cout << "for debug after w1" << endl;
     float w2 = g->edge_value(nodenames[b], nodenames[c]);
     
     if(w1 < 1e-6 || w2 < 1e-6)  // save computation
         if(!g->exists(nodenames[a], nodenames[c]) || !g->exists(nodenames[b], nodenames[c]))
             throw runtime_error("invalid open triangle");
 
-    //cout << "for debug" << endl;
-    //return (emb.row(c) - emb.row(a)) * w1 + (emb.row(c) - emb.row(b)) * w2;
     return (emb.row(c) - emb.row(a)) * w1 + (emb.row(c) - emb.row(b)) * w2;
 }
 
 template <typename graph_t>
 float P(int a, int b, int c, cgraph_type<graph_t> g, Tensor2D emb, Tensor1D theta, const vector<node_type<graph_t>>& nodenames)
 {
-    //cout << "for debug in" << endl;
     Tensor1D_Managed x = X<graph_t>(a, b, c, g, emb, nodenames);
-    //cout << "for debug out" << endl;
     float power = theta.segment(0, theta.size() - 1).cwiseProduct(x).sum();
     power = -(power + theta(0, theta.size() - 1));
  
@@ -81,17 +73,7 @@ void translate_input(const py::list py_graph, const py::list py_nodenames, vecto
     // graph
     for(int i = 0; i < py::len(py_graph); i++)
     {
-        //cout << "debug type " << py::extract<string>(py::object(py_graph[i]).attr("__class__").attr("__name__"))() << endl;
-
-        //cgraph_type<graph_t> g = ((graph_t*)py::object(py_graph[i]).ptr())->data();
-        //py::extract<Graph_Int32_Float*> ext(py_graph[i]);
-        //if(!ext.check())
-        //    throw runtime_error("Type check failed for mygraph object");
-        //cgraph_type<graph_t> g = ext()->data();
-        // TODO: it might be wrong to convert PyObject* to GraphPyWrapper*
         cgraph_type<graph_t> g = (cgraph_type<graph_t>)py::extract<uintptr_t>(py_graph[i].attr("data")())(); 
-        //cout << "debug wrapper object " << (graph_t*)py::object(py_graph[i]).ptr() << endl;
-        //cout << "debug, graph object " << g << endl;
         graphs->push_back(g);
     }
 
@@ -141,11 +123,6 @@ void extract_record(py::object rec, Record *out)
     if(!ext.check())
         throw runtime_error("Type check failed for data record, expecting py::list");
     py::list lst = ext();
-    /*for(int i = 0; i < 7; i++)
-    {
-        string tmp = py::extract<string>(py::object(lst[i]).attr("__class__").attr("__name__"))();
-        cout << tmp << endl;
-    }*/
     out->tm = extract<int>(lst[0]);
     out->k = extract<int>(lst[1]);  // center node
     out->i = extract<int>(lst[2]);
@@ -236,10 +213,6 @@ py::list _emcoef(py::list data, py::object py_emb, py::object py_theta, py::list
             C1 = 1;
             for(const auto& nbr : cmnbr)
             {
-                /*if(rec.tm == 10 && rec.k == 3502 && rec.i == 4 && rec.j == 1890)
-                {
-                    cout << "ciml nbrs " << nbr << ' ' << name2idx[nbr] << ' ' << (1 - P<graph_t>(rec.i, rec.j, name2idx[nbr], g, curemb, theta, nodenames)) << endl;
-                }*/
                 C1 *= (1 - P<graph_t>(rec.i, rec.j, name2idx[nbr], g, curemb, theta, nodenames));
             }
             C1 = 1.0 - C1;
@@ -268,8 +241,6 @@ py::list _emcoef(py::list data, py::object py_emb, py::object py_theta, py::list
     {
         Record rec = currec[i - lb];
         ret[i] = py::make_tuple(py::list(py::make_tuple(rec.tm, rec.k, rec.i, rec.j)), py::list(py::make_tuple(curC[i - lb], rec.wtv1, rec.wtv2)));
-        //if(py::extract<string>(py::object(ret[i]).attr("__class__").attr("__name__"))() != "tuple")
-        //    cout << "type of rec " << i << " is " << py::extract<string>(py::object(ret[i]).attr("__class__").attr("__name__"))() << " instead of tuple" << endl;
     } }
 
     OMP_END_FOR();

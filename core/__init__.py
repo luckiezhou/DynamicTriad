@@ -16,24 +16,28 @@ def main():
 
     # random.seed(977)  # for reproducability
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument('-I', '--niters', type=int, help="number of iterations", default=20)
+    parser.add_argument('-I', '--niters', type=int, help="number of optimization iterations", default=10)
     parser.add_argument('-m', '--starttime', type=str, help=argparse.SUPPRESS, default=0)
-    parser.add_argument('-d', '--datafile', type=str, required=True, help='data file/dir name')
+    parser.add_argument('-d', '--datafile', type=str, required=True, help='input directory name')
     parser.add_argument('-b', '--batchsize', type=int, help="batchsize for training", default=5000)
-    parser.add_argument('-n', '--nsteps', type=int, help="number of time slices", required=True)
+    parser.add_argument('-n', '--nsteps', type=int, help="number of time steps", required=True)
     parser.add_argument('-K', '--embdim', type=int, help="number of embedding dimensions", default=48)
-    parser.add_argument('-l', '--stepsize', type=int, help="size of slice, in unit decided by dataset", required=True)
-    parser.add_argument('-s', '--stepstride', type=int, help="interval between two slices", required=True)
+    parser.add_argument('-l', '--stepsize', type=int, help="size of of a time steps", default=1)
+    parser.add_argument('-s', '--stepstride', type=int, help="interval between two time steps", default=1)
     parser.add_argument('-o', '--outdir', type=str, required=True, help="output directory name")
     parser.add_argument('--cachefn', type=str, help="prefix for data cache files", default=None)
     parser.add_argument('--lr', type=float, help="initial learning rate", default=0.1)
-    parser.add_argument('--beta', type=float, nargs='+', help="coefficients for components", default=1.0)
+    parser.add_argument('--beta-smooth', type=float, default=0.1, help="coefficients for smooth component")
+    parser.add_argument('--beta-triad', type=float, default=0.1, help="coefficients for triad component")
     parser.add_argument('--negdup', type=int, help="neg/pos ratio during sampling", default=1)
-    parser.add_argument('--datasetmod', type=str, help='module name for dataset loading', default='core.dataset.adjlist')
+    parser.add_argument('--datasetmod', type=str, help=argparse.SUPPRESS, default='core.dataset.adjlist',
+                        # help='module name for dataset loading',
+                        )
+    # parser.add_argument('--dataname', type=str, default=None, help='name for the current data file')
     parser.add_argument('--validation', type=str, default='link_reconstruction',
-                        help=', '.join(list(set(du.TestSampler.tasks) & set(eu.Validator.tasks))))
+                        help=', '.join(list(sorted(set(du.TestSampler.tasks) & set(eu.Validator.tasks)))))
     args = parser.parse_args()
-
+    args.beta = [args.beta_smooth, args.beta_triad]
     # some fixed arguments in published code
     args.pretrain_size = args.nsteps
     args.trainmod = 'core.algorithm.dynamic_triad'
@@ -68,7 +72,7 @@ def main():
                 print("Failed to load cache file {}: {}".format(cachefn, e.message))
 
         # update cache
-        print("updating cache file for dataset {}".format(ds.name))
+        print("updating cache file for prefix {}".format(cachefn))
         ar, args = ds.cache()
         cPickle.dump(args, open(cachefn + '.args', 'w'))
         cPickle.dump(ar, open(cachefn, 'w'))
@@ -80,7 +84,7 @@ def main():
             fn = "{}/{}.out".format(outdir, i)
             fh = open(fn, 'w')
             for j in range(len(vertices)):
-                print("{} {}".format(vertices[j], ' '.join([str(d) for d in data[i][j]])), file=fh)
+                print("{} {}".format(vertices[j], ' '.join(["{:.3f}".format(d) for d in data[i][j]])), file=fh)
             fh.close()
 
     TrainModel = load_trainmod(args.trainmod)
@@ -88,8 +92,8 @@ def main():
 
     ds = Dataset(args.datafile, args.starttime, args.nsteps, stepsize=args.stepsize, stepstride=args.stepstride)
     load_or_update_cache(ds, args.cachefn)
-    dsargs = {'datafile': args.datafile, 'starttime': args.starttime, 'nsteps': args.nsteps,
-              'stepsize': args.stepsize, 'stepstride': args.stepstride, 'datasetmod': args.datasetmod}
+    # dsargs = {'datafile': args.datafile, 'starttime': args.starttime, 'nsteps': args.nsteps,
+    #           'stepsize': args.stepsize, 'stepstride': args.stepstride, 'datasetmod': args.datasetmod}
     tm = TrainModel(ds, pretrain_size=args.pretrain_size, embdim=args.embdim, beta=args.beta,
                     lr=args.lr, batchsize=args.batchsize, sampling_args=args.sampling_args)
 

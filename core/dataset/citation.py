@@ -15,7 +15,7 @@ class Dataset(DatasetBase):
     def inittime(self):
         return self.__data['args']['minyear']
 
-    def __init__(self, datafn, localyear=None, nsteps=None, stepsize=None, stepstride=None, offset=0):
+    def __init__(self, datafn, localyear=None, nsteps=None, stepsize=None, stepstride=None, offset=0, dataname=None):
         self.datafn = datafn
         self.__data = cPickle.load(open(self.datafn, 'r'))
 
@@ -29,7 +29,7 @@ class Dataset(DatasetBase):
         elif nonecnt != 0:
             raise RuntimeError("You should not specify a part of dataset arguments")
 
-        DatasetBase.__init__(self, datafn, localyear, nsteps, stepsize, stepstride, offset)
+        DatasetBase.__init__(self, datafn, localyear, nsteps, stepsize, stepstride, offset, dataname)
 
         self.__vertex_raw_labels_cache = None
 

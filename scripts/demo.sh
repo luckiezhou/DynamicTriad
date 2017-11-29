@@ -29,7 +29,9 @@ touch output/.dynamic_triad
 rm -rf data/academic_toy
 mkdir -p data/academic_toy
 python scripts/academic2adjlist.py data/academic_toy.pickle data/academic_toy
-python . -I 10 -d data/academic_toy -n 15 -K 48 -l 4 -s 2 -o output --beta 1 1 --cachefn /tmp/citation -b 5000
-python scripts/stdtests.py -f output -d data/academic_toy.pickle -m 1980 -s 4 -l 2 -n 15 -t all --datasetmod core.dataset.citation --cachefn /tmp/citation
+python . -I 10 -d data/academic_toy -n 15 -K 48 -l 4 -s 2 -o output --beta-smooth 1 --beta-triad 1 --cachefn /tmp/academic -b 5000
+# we have to use a different cache file because the file name and indexing are different between data/academic_toy and data/academic_toy.pickle,
+# though they are actually the same dataset
+python scripts/stdtests.py -f output -d data/academic_toy.pickle -m 1980 -s 4 -l 2 -n 15 -t all --datasetmod core.dataset.citation --cachefn /tmp/academic_raw
 
 popd

@@ -94,6 +94,10 @@ def load_adjlist(fn, node_type='string', weight_type='float'):
             v = py_node_type(v)
             w = py_weight_type(w)
 
+            if v == n:
+                print("[warning] loopback edge ({}, {}) detected".format(v, n))
+                continue
+
             if not g.exists(v):
                 g.add_vertex(v)
             

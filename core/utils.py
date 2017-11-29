@@ -19,11 +19,13 @@ try:
     ))
     sys.argv = _old_argv
     from utils_cy import *
+    __impl__ = 'cython'
 except ImportError as e:
     sys.argv = _old_argv
     print("Cython not avaiable, falling back to python implemented utils")
     print("Err msg: {}".format(e.message))
     from utils_py import *
+    __impl__ = 'python'
 
 
 # the utilities that have to be implemented in pure python
