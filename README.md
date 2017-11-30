@@ -83,9 +83,9 @@ The program outputs to a directory creating ``N`` files named ``0.out, 1.out, 2.
 ```
 where ``<node_name>`` is the name of the vertex defined in the input files, which is followed by ``K`` real values, i.e. the ``K``-length embedding vector for vertex ``<node_name>`` at the corresponding time step. 
 
-### Usage
+### Main Script
 
-Assume the input data is available in directory ``<input_dir>`` and the DynamicTriad project root directory is ``<dynamic_triad_root>``, the help information of the embedding program can be obtain by executing command
+Now that the input data is ready, the main script will be called to compute dynamic vertex embeddings. Assume the root directory of the DynamicTriad project  is ``<dynamic_triad_root>``, the help information of the main script can be obtain by executing command
 ```
 python <dynamic_triad_root> -h
  
@@ -133,21 +133,51 @@ Some of the arguments may require extra explanation:
 
 ### Demo
 
-We include a toy data set in the ``data`` directory, which is a preprocessed version of ``ACM-Citation-network V8`` from [AMiner](https://www.aminer.cn/citation). We sampled 2000 vertices in the original graph, and the resulting data is archived with Python pickle module to ``data/academic_toy.pickle``.
+We include a toy data set in the ``data`` directory, which is a preprocessed version of ``ACM-Citation-network V8`` from [AMiner](https://www.aminer.cn/citation). We sampled 2000 vertices from the original graph, and stored the resulting subgraph as well as its label information into ``data/academic_toy.pickle`` with Python pickle module .
 
-A demo script is available as ``scripts/demo.sh``, which basically does three things:
+A demo script is available as ``scripts/demo.sh``, which primarily does three things:
 
-- Call ``scripts/academic2adjlist.py`` to convert the toy data to the input format described in [Input](#input-format).
+- Call ``scripts/academic2adjlist.py`` to convert the toy data to the input format described in [Input Format](#input-format).
 - Call the main script to compute the vertex embeddings and save them to ``output`` directory.
 - Call ``scripts/stdtest.py`` to experiment on standard tasks defined in paper [1].
 
-In the demo script, you can find an example for the standard usage of the main script, as well as hints for the usage of the other two scripts if you are interested. 
+In the demo script, you can find an example for the standard usage of the main script, as well as hints for the usage of the other two scripts, if you are interested in them. 
 
-To execute the demo, run command
+To run the demo, execute command
 ```
 bash scripts/demo.sh
 ```
 
 ### Time Model
 
-aaa
+TL;DR: If you would like the main script to treat your graphs exactly as they are specified in your input files, please leave the arguments ``-l`` and ``-s`` to their default value.
+
+For flexibility, a part of the data preprocessing functionalities are included into our main script. Specifically, if we call each graph file in the input directory a **unit graph**, our main script provides interfaces to create the graph for each time step out of these unit graphs.
+
+Before describing this preprocessing step, we shall first define a **time step**. According to our assumption, a time step consists of ``<stepsize>`` consecutive unit graphs, where ``<stepsize>`` is a constant value shared across all time steps. There are ``<stepstride> - 1`` unit graphs between the leading unit graphs of two adjacent time steps, where ``<stepstride>`` is also a constant value. For example, we set ``<stepsize>=4`` and ``<stepstride>=2`` in our demo script, as a result, the time steps are:
+```
+time step #1: unit graph 0 -- unit graph 3
+time step #2: unit graph 2 -- unit graph 5
+time step #3: unit graph 4 -- unit graph 7
+...
+```
+
+Once ``<stepsize>`` and ``<stepstride>`` are given, each time step now corresponds to a subsequence of unit graphs, and the graph for this time step is created by merging these unit graphs, i.e. by summing up weights for the same edge.
+
+Note that if you set both ``<stepsize>`` and ``<stepstride>`` to 1, the graphs will be used as is specified in the input directory. If the merging operation is found very time expensive, specifying a ``<--cachefile>`` avoids re-merging everytime you run the script, as long as the data configuration is kept unchanged.
+
+## Benchmarks
+
+
+## Reference
+
+[1] Zhou, L; Yang, Y; Ren, X; Wu, F and Zhuang, Y, 2018, Dynamic Network Embedding by Modelling Triadic Closure Process, In AAAI, 2018 
+
+```
+@inproceedings{zhou2018dynamic,
+  title = "{Dynamic Network Embedding by Modelling Triadic Closure Process}", 
+  author = {{Zhou}, L. and {Yang}, Y. and {Ren}, X. and {Wu}, F. and {Zhuang}, Y.}, 
+  booktitle={AAAI},
+  year = 2018, 
+} 
+```

@@ -1,0 +1,9 @@
+Cython>=0.26.1
+Keras>=2.0.6
+dill>=0.2.5
+six>=1.11.0
+scipy>=0.19.1
+numpy>=1.13.3
+scikit_learn>=0.19.1
+
+
