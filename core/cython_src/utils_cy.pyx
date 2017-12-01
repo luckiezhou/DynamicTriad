@@ -273,8 +273,10 @@ def group_by(data, key=lambda x: x):
 
 
 cpdef int crandint(int ub):
-    cdef int r
-    return rand() % ub 
+    if ub <= 0:
+        return 0
+
+    return rand() % ub
 
 
 # __init__

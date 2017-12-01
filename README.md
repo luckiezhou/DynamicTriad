@@ -1,6 +1,13 @@
 # DynamicTriad [Under Construction]
 This project implements the DynamicTriad algorithm proposed in \[1\], which is a node embedding algorithm for undirected dynamic graphs.
 
+## Quick Links
+
+- [Building and Testing](#building-and-testing)
+- [Usage](#usage)
+- [Performance](#performance)
+- [Reference](#reference)
+
 ## Building and Testing
 
 This project is implemented primarily in Python 2.7, with some c/c++ extensions written for time efficiency. 
@@ -30,11 +37,17 @@ Although not necessarily mentioned in all the installation instruction links abo
 
 ### Building the Project
 
-A building script ```build.sh``` is available in the root directory of this project, simplifying the building process to a single command
+Before build the project, we recommend switching the working directory to the project root directory. Assume the project root is at ``<dynamic_triad_root>``, then run command
 ```
-cd <dynamic_triad_root>; bash build.sh
+cd <dynamic_triad_root>
 ```
-Before running the building commands, you may specify the configuration of some environment variables. You can either use the default value or specify your custom installation paths for certain libraries. For example,
+Note that all the commands presented in the rest of this documentation assume your current working directory is ``<dynamic_triad_root>``.
+
+A building script ```build.sh``` is available in the root directory of this project, simplifying the building process to executing a single command
+```
+bash build.sh
+```
+Before running the actual building commands, you are expected to configure some of the environment variables. You can either use the default value or specify your custom installation paths for certain libraries. For example,
 ```
 PYTHON_LIBRARY? (default: /usr/lib64/libpython2.7.so.1.0, use a space ' ' to leave it empty) 
 PYTHON_INCLUDE_DIR? (default: /usr/include/python2.7, use a space ' ' to leave it empty) 
@@ -43,7 +56,7 @@ BOOST_ROOT? (default: , use a space ' ' to leave it empty) ~/boost_1_54_1
 ```
 If everything goes well, the ```build.sh``` script will automate the building process and create all necessary binaries.
 
-Note that the project also contains some Cython modules, however, they will be automatically built as soon as the module is imported in a ready environment.
+Note that the project also contains some Cython modules, however, they will be automatically built as soon as the module is imported as long as the environment is ready.
 
 ### Testing the Project
 
@@ -57,9 +70,7 @@ to see if everything is fine with building.
 
 Given a sequence of undirected graphs, each for a time step, this program can be used to compute a real-valued vector for each vertex at each time step.
 
-### Data Format
-
-#### Input Format 
+### Input Format 
 
 The input is expected to be a directory containing ``N`` input files named ``0, 1, 2...``, where `N` is the length of the graph sequence. Each file contains an adjacency list of the corresponding graph, and the adjacency list consists of multiple lines, each in the format:
 ```
@@ -75,7 +86,7 @@ Note that:
 - If the graph is unweighted, place a ``1.0`` for all ``weight`` placeholders, rather than ignoring all weights in the adjacency list.
 - Loopback edges (u, u, w) will be ignored when the adjacency list is loaded.
 
-#### Output Format
+### Output Format
 
 The program outputs to a directory creating ``N`` files named ``0.out, 1.out, 2.out, ...``, each corresponds to an input file (time step). Each output file contains ``V`` lines, where ``V`` is the number of vertices in each graph. And each line is in format:
 ```
@@ -85,11 +96,11 @@ where ``<node_name>`` is the name of the vertex defined in the input files, whic
 
 ### Main Script
 
-Now that the input data is ready, the main script will be called to compute dynamic vertex embeddings. Assume the root directory of the DynamicTriad project  is ``<dynamic_triad_root>``, the help information of the main script can be obtain by executing command
+Now that the input data is ready, the main script will be called to compute dynamic vertex embeddings. Following the assumption that the current working directory is ``<dynamic_triad_root>``, the help information of the main script can be obtain by executing command
 ```
-python <dynamic_triad_root> -h
+python . -h
  
-usage: <dynamic_triad_root> [-h] [-I NITERS] -d DATAFILE [-b BATCHSIZE] -n NSTEPS
+usage: . [-h] [-I NITERS] -d DATAFILE [-b BATCHSIZE] -n NSTEPS
                [-K EMBDIM] [-l STEPSIZE] [-s STEPSTRIDE] -o OUTDIR
                [--cachefn CACHEFN] [--lr LR] [--beta BETA [BETA ...]]
                [--negdup NEGDUP] [--validation VALIDATION]
@@ -166,8 +177,15 @@ Once ``<stepsize>`` and ``<stepstride>`` are given, each time step now correspon
 
 Note that if you set both ``<stepsize>`` and ``<stepstride>`` to 1, the graphs will be used as is specified in the input directory. If the merging operation is found very time expensive, specifying a ``<--cachefile>`` avoids re-merging everytime you run the script, as long as the data configuration is kept unchanged.
 
-## Benchmarks
+## Performance
 
+### Data Sets
+
+One out of the three data sets reported in [1] was made public by [AMiner](https://www.aminer.cn/citation), which consists of information about papers published in a recent few decades. We keep only those papers published between 1980 and 2015 (included), and researchers with less than 15 publications in total and conferences with less than 20 participants in total are ignored so that the resulting dynamic network becomes more stable. 
+
+In this data set, labels are extracted for each researcher indicating the research fields he/she focuses on. We manually specify a set of representing conferences for each research field, and try to find out for a research in which field he/she publishes most of his/her work, in a certain time step.
+
+A preprocessed toy data is included as ``data/academic_toy.pickle``, which is the ``ACM-Citation-network V8`` data set from AMiner preprocessed as we describe above, with the only difference that the vertices are further sampled to have a limited size of 2000.  (**TODO: is it proper to provide download for our full preprocessed data?**)
 
 ## Reference
 

@@ -15,6 +15,7 @@ from . import pos_neg
 from core.algorithm.embutils import WithData
 import core.gconfig as gconf
 from core import utils
+from collections import defaultdict
 
 
 class Sampler(pos_neg.Sampler, WithData):
@@ -35,11 +36,7 @@ class Sampler(pos_neg.Sampler, WithData):
         super(Sampler, self).pretrain_begin_iteration()
 
         # sample triangular data
-        triagdata = []
-        pt = 0
         filtered_pos = [p for p in self._pos[0] if p[0] + 1 < self._pos_range[1]]  # except the last time slice!
-        # nodenames = list(self.dataset.gtgraphs['any'].vp['name'])
-        # name2idx = {n: i for i, n in enumerate(nodenames)}
 
         if len(filtered_pos) <= 0:
             print("No possible triangular samples, given positive range {} to {}".
@@ -66,7 +63,7 @@ class Sampler(pos_neg.Sampler, WithData):
                     ub = min(lb + left_cnt, len(filtered_pos))
                     newsamples = mapper.run(filtered_pos[lb:ub])
                     self.__all_trial += (ub - lb)
-                    self.__succ_trial =+ len(newsamples)
+                    self.__succ_trial += len(newsamples)
                     triagdata.extend(newsamples)
                 triagdata = triagdata[:len(self._pos[0])]
             else:
@@ -117,10 +114,17 @@ class Sampler(pos_neg.Sampler, WithData):
     @staticmethod
     def __sample_uncached_monitor(reportq):
         procinfo = {}
+        proc_reent = defaultdict(lambda: 0)
         while True:
             obj = reportq.get()
             if isinstance(obj, StopIteration):
                 break
+            if obj[1] is None:  # a proc terminates
+                procinfo["{}_{}".format(obj[0], proc_reent[obj[0]])] = procinfo[obj[0]]
+                del procinfo[obj[0]]
+                proc_reent[obj[0]] += 1
+                continue
+
             procinfo[obj[0]] = obj[1:]
             
             total_proccnt = sum([v[0] for v in procinfo.values()])
@@ -164,7 +168,8 @@ class Sampler(pos_neg.Sampler, WithData):
                 if curres is not None:
                     total_avail_cnt += 1
                     ret.append(curres)
-            reportq.put([id(process), i, total_avail_cnt, total_trycnt])
+            reportq.put([id(process), len(data), total_avail_cnt, total_trycnt])
+            reportq.put([id(process), None])  # signal for terminate
             return ret
 
         return __sample_uncached

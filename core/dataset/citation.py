@@ -166,18 +166,18 @@ class Dataset(DatasetBase):
                     #  'NIPS|Annual Conference on Neural Information Processing Systems',
                     #  'ACL|Annual Meeting of the Association for Computational Linguistics']
                     ]
+        # confdata records the representing conferences for each field
         confdata = {n: i for i, arr in enumerate(confdata) for n in arr}
         for k in confdata.keys():
             sname, lname = k.split('|')
             confdata[k] = [confdata[k], re.compile(sname), re.compile(lname, re.I)]
+        # conffeat is a list of matrices, each of them is a user-conference matrix for participation information
         conffeat = [self.__data['conf_feat'][y] for y in range(self.localunit, self.localunit + self.nunits)]
-        # conffeat = utils.load_arr(self.datadir + '/conf_feat.pickle')
-        # conffeat, conffeatargs = conffeat[:-1], conffeat[-1]
 
+        # names of conferences in the user-conference matrix, in global indices (before filtering)
         conffeat_names = self.__data['conf_names']
-        # conffeat_names = utils.load_dict(self.datadir + '/conf_names.dict')
         confmap = self.__data['confmap']
-        # confmap = utils.load_map(self.datadir + "/conference.map")
+        # maps conference names from global indices to their original names
         conffeat_names = [confmap[c] for c in conffeat_names]
 
         # we use theory conferences because it is more independent
