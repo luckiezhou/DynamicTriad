@@ -144,7 +144,7 @@ Some of the arguments may require extra explanation:
 
 ### Demo
 
-We include a toy data set in the ``data`` directory, which is a preprocessed version of ``ACM-Citation-network V8`` from [AMiner](https://www.aminer.cn/citation). We sampled 2000 vertices from the original graph, and stored the resulting subgraph as well as its label information into ``data/academic_toy.pickle`` with Python pickle module .
+We include a toy data set in the ``data`` directory, namely ``data/academic_toy.pickle``, which is a subset of ``Academic`` data set in [1] stored using Python pickle module. See [Data Sets](#data-sets) for more details.
 
 A demo script is available as ``scripts/demo.sh``, which primarily does three things:
 
@@ -177,15 +177,37 @@ Once ``<stepsize>`` and ``<stepstride>`` are given, each time step now correspon
 
 Note that if you set both ``<stepsize>`` and ``<stepstride>`` to 1, the graphs will be used as is specified in the input directory. If the merging operation is found very time expensive, specifying a ``<--cachefile>`` avoids re-merging everytime you run the script, as long as the data configuration is kept unchanged.
 
-## Performance
+## Evaluation
 
 ### Data Sets
 
-One out of the three data sets reported in [1] was made public by [AMiner](https://www.aminer.cn/citation), which consists of information about papers published in a recent few decades. We keep only those papers published between 1980 and 2015 (included), and researchers with less than 15 publications in total and conferences with less than 20 participants in total are ignored so that the resulting dynamic network becomes more stable. 
+One out of the three data sets reported in [1], which is named Academic Data Set in [1], was made public by [AMiner](https://www.aminer.cn/citation), which consists of information about papers published in a recent few decades. We keep only those papers published between 1980 and 2015 (included), and researchers with less than 15 publications in total and conferences with less than 20 participants in total are ignored so that the resulting dynamic network becomes more stable. 
 
-In this data set, labels are extracted for each researcher indicating the research fields he/she focuses on. We manually specify a set of representing conferences for each research field, and try to find out for a research in which field he/she publishes most of his/her work, in a certain time step.
+In this data set, labels are extracted for each researcher indicating the research fields he/she focuses on. We manually specify a set of representing conferences for each research field, and try to find out for a researcher in which field he/she publishes most of his/her work, given a certain time step.
 
-A preprocessed toy data is included as ``data/academic_toy.pickle``, which is the ``ACM-Citation-network V8`` data set from AMiner preprocessed as we describe above, with the only difference that the vertices are further sampled to have a limited size of 2000.  (**TODO: is it proper to provide download for our full preprocessed data?**)
+A toy data is included in this project as ``data/academic_toy.pickle``, which was originally the ``ACM-Citation-network V8`` data set from AMiner, and was preprocessed as we describe above, with the only difference that the vertices are further sampled to a limited size of 2000.  (**TODO: is it proper to provide download for our full preprocessed data?**)
+
+### Performance
+
+The performance of DynamicTriad on Academic Data Set with embedding dimension set to 48, as reported in [1], is:
+
+| F1-score on Academic | Vertex Classification | Link Reconstruction | C.Link Reconstruction  |
+|----------------------------|-----------------------|---------------------|------------------------|
+| [DeepWalk](https://github.com/phanein/deepwalk) | 0.630 | 0.694 | 0.702 |
+| [node2vec]( https://github.com/aditya-grover/node2vec) | 0.359 | 0.574 | 0.611 |
+| [Temporal Network Embedding](https://github.com/linhongseba/Temporal-Network-Embedding)
+ | 0.625 | 0.974 | 0.899 |
+| DynamicTriad | **0.704** | **0.985** | **0.925** |
+
+| F1-score on Academic | Vertex Prediction | Link Prediction | C.Link Prediction  |
+|----------------------------|-----------------------|---------------------|------------------------|
+| [DeepWalk](https://github.com/phanein/deepwalk) | 0.591 | 0.612 | 0.674 |
+| [node2vec]( https://github.com/aditya-grover/node2vec) | 0.355 | 0.548 | 0.617 |
+| [Temporal Network Embedding](https://github.com/linhongseba/Temporal-Network-Embedding)
+ | 0.596 | 0.772 | 0.889 |
+| DynamicTriad | **0.671** | **0.836** | **0.924** |
+
+Please refer to [1] for more information about our experiments, where you can find task definition, experimental settings, description of unpublished data sets and the full results of our experiments.
 
 ## Reference
 
