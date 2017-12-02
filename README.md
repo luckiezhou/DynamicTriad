@@ -195,16 +195,14 @@ The performance of DynamicTriad on Academic Data Set with embedding dimension se
 |----------------------------|-----------------------|---------------------|------------------------|
 | [DeepWalk](https://github.com/phanein/deepwalk) | 0.630 | 0.694 | 0.702 |
 | [node2vec]( https://github.com/aditya-grover/node2vec) | 0.359 | 0.574 | 0.611 |
-| [Temporal Network Embedding](https://github.com/linhongseba/Temporal-Network-Embedding)
- | 0.625 | 0.974 | 0.899 |
+| [Temporal Network Embedding](https://github.com/linhongseba/Temporal-Network-Embedding) | 0.625 | 0.974 | 0.899 |
 | DynamicTriad | **0.704** | **0.985** | **0.925** |
 
 | F1-score on Academic | Vertex Prediction | Link Prediction | C.Link Prediction  |
 |----------------------------|-----------------------|---------------------|------------------------|
 | [DeepWalk](https://github.com/phanein/deepwalk) | 0.591 | 0.612 | 0.674 |
 | [node2vec]( https://github.com/aditya-grover/node2vec) | 0.355 | 0.548 | 0.617 |
-| [Temporal Network Embedding](https://github.com/linhongseba/Temporal-Network-Embedding)
- | 0.596 | 0.772 | 0.889 |
+| [Temporal Network Embedding](https://github.com/linhongseba/Temporal-Network-Embedding) | 0.596 | 0.772 | 0.889 |
 | DynamicTriad | **0.671** | **0.836** | **0.924** |
 
 Please refer to [1] for more information about our experiments, where you can find task definition, experimental settings, description of unpublished data sets and the full results of our experiments.
