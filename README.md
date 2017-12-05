@@ -1,5 +1,5 @@
-# DynamicTriad [Under Construction]
-This project implements the DynamicTriad algorithm proposed in \[1\], which is a node embedding algorithm for undirected dynamic graphs.
+# DynamicTriad
+This project implements the DynamicTriad algorithm proposed in [1], which is a node embedding algorithm for undirected dynamic graphs.
 
 ## Quick Links
 
@@ -185,11 +185,11 @@ One out of the three data sets reported in [1], which is named Academic Data Set
 
 In this data set, labels are extracted for each researcher indicating the research fields he/she focuses on. We manually specify a set of representing conferences for each research field, and try to find out for a researcher in which field he/she publishes most of his/her work, given a certain time step.
 
-A toy data is included in this project as ``data/academic_toy.pickle``, which was originally the ``ACM-Citation-network V8`` data set from AMiner, and was preprocessed as we describe above, with the only difference that the vertices are further sampled to a limited size of 2000.  (**TODO: is it proper to provide download for our full preprocessed data?**)
+A toy data is included in this project as ``data/academic_toy.pickle``, which was originally the ``ACM-Citation-network V8`` data set from AMiner, and was preprocessed as we describe above, with the only difference that the vertices are further sampled to a limited size of 2000. And our full preprocessing result can be downloaded [here](https://drive.google.com/file/d/1AF5soBDb2AbAhCNKUeYa_om6IcldEU83/view?usp=sharing).
 
 ### Performance
 
-The performance of DynamicTriad on Academic Data Set with embedding dimension set to 48, as reported in [1], is:
+As reported in [1], the performance of DynamicTriad on Academic Data Set with embedding dimension set to 48 is:
 
 | F1-score on Academic | Vertex Classification | Link Reconstruction | C.Link Reconstruction  |
 |----------------------------|-----------------------|---------------------|------------------------|
@@ -205,7 +205,7 @@ The performance of DynamicTriad on Academic Data Set with embedding dimension se
 | [Temporal Network Embedding](https://github.com/linhongseba/Temporal-Network-Embedding) | 0.596 | 0.772 | 0.889 |
 | DynamicTriad | **0.671** | **0.836** | **0.924** |
 
-Please refer to [1] for more information about our experiments, where you can find task definition, experimental settings, description of unpublished data sets and the full results of our experiments.
+Please refer to [1] for more information about our experiments, where you can find the definition of tasks, the experimental settings, the description of unpublished data sets and the full results of our experiments.
 
 ## Reference
 
