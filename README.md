@@ -37,7 +37,7 @@ Although not necessarily mentioned in all the installation instruction links abo
 
 ### Building the Project
 
-Before build the project, we recommend switching the working directory to the project root directory. Assume the project root is at ``<dynamic_triad_root>``, then run command
+Before building the project, we recommend switching the working directory to the project root directory. Assume the project root is at ``<dynamic_triad_root>``, then run command
 ```
 cd <dynamic_triad_root>
 ```
@@ -47,7 +47,7 @@ A building script ```build.sh``` is available in the root directory of this proj
 ```
 bash build.sh
 ```
-Before running the actual building commands, you are expected to configure some of the environment variables. You can either use the default value or specify your custom installation paths for certain libraries. For example,
+Before running the actual building commands, you are required by the script to configure some of the environment variables. You can either use the default value or specify your custom installation paths for certain libraries. For example,
 ```
 PYTHON_LIBRARY? (default: /usr/lib64/libpython2.7.so.1.0, use a space ' ' to leave it empty) 
 PYTHON_INCLUDE_DIR? (default: /usr/include/python2.7, use a space ' ' to leave it empty) 
@@ -56,11 +56,11 @@ BOOST_ROOT? (default: , use a space ' ' to leave it empty) ~/boost_1_54_1
 ```
 If everything goes well, the ```build.sh``` script will automate the building process and create all necessary binaries.
 
-Note that the project also contains some Cython modules, however, they will be automatically built as soon as the module is imported as long as the environment is ready.
+Note that the project also contains some Cython modules, however, they will be automatically built as soon as the module is imported if the environment is ready.
 
 ### Testing the Project
 
-A testing script ```scripts/test.py``` is available, run
+A test script ```scripts/test.py``` is available, run
 ```
 python scripts/test.py
 ```
@@ -81,7 +81,7 @@ where ``x_node_name`` can be any ascii string without white space characters in 
 Note that:
 
 - The graph is expected to be undirected, however, it should be presented in a **directed format**. That is, if there is an edge (u, v, w), its reciprocal edge (v, u, w) must also exists in the adjacency list.
-- The vertex set should be same for all graphs, if a vertex is missing in a certain graph, simply represent it with an isolated vertex. 
+- The vertex set should be same for all graphs, if a vertex is missing in a certain graph, simply present it as an isolated vertex. 
 - If a vertex has no outbound vertices, you should write a line with only the ``from_node_name``, instead of ignoring this vertex.
 - If the graph is unweighted, place a ``1.0`` for all ``weight`` placeholders, rather than ignoring all weights in the adjacency list.
 - Loopback edges (u, u, w) will be ignored when the adjacency list is loaded.
@@ -132,12 +132,12 @@ optional arguments:
   --negdup NEGDUP       neg/pos ratio during sampling (default: 1)
   --validation VALIDATION
                         link_prediction, link_reconstruction, node_classify,
-                        node_predict, none (default: link_reconstruction
+                        node_predict, none (default: link_reconstruction)
 ```
 
 Some of the arguments may require extra explanation:
 
-- ``--beta-smooth/--beta-triad``, two hyper parameters used in the model, see reference [1] for details about the hyper parameters of DynamicTriad. Empirically, the hyper parameters need to be tuned in order to achieve best performance, and the best choice depends on the task and the stability of the target dynamic network.
+- ``--beta-smooth/--beta-triad``, two hyper parameters used in the model, see reference [1] for details about the hyper parameters of DynamicTriad. Empirically, the hyper parameters need to be tuned in order to achieve the best performance, and the best choice depends on the task and the stability of the target dynamic network.
 - ``-l/--stepsize`` and ``-s/--stepstride``, see [Time Model](#time-model) for details.
 - ``--cachefn``, sometimes you find that the data preprocessing becomes intolerably time consuming (see [Time Model](#time-model)), and a solution is to specify ``--cachefn`` so that the program creates or uses a cache file of the preprocessed data. The cache file consists of two parts -- a file named ``<--cachefile>.cache`` as well as a file named ``<--cachefile>.cache.args``. If you have changed your configuration for preprocessing, remove ``<--cachefile>.cache.args`` and the cache will be regenerated.
 - ``--validation``, the four tasks available for validation is as defined in [1], please refer to the paper for details.
@@ -150,7 +150,7 @@ A demo script is available as ``scripts/demo.sh``, which primarily does three th
 
 - Call ``scripts/academic2adjlist.py`` to convert the toy data to the input format described in [Input Format](#input-format).
 - Call the main script to compute the vertex embeddings and save them to ``output`` directory.
-- Call ``scripts/stdtest.py`` to experiment on standard tasks defined in paper [1].
+- Call ``scripts/stdtest.py`` to experiment on standard tasks described in paper [1].
 
 In the demo script, you can find an example for the standard usage of the main script, as well as hints for the usage of the other two scripts, if you are interested in them. 
 
@@ -181,7 +181,7 @@ Note that if you set both ``<stepsize>`` and ``<stepstride>`` to 1, the graphs w
 
 ### Data Sets
 
-One out of the three data sets reported in [1], which is named Academic Data Set in [1], was made public by [AMiner](https://www.aminer.cn/citation), which consists of information about papers published in a recent few decades. We keep only those papers published between 1980 and 2015 (included), and researchers with less than 15 publications in total and conferences with less than 20 participants in total are ignored so that the resulting dynamic network becomes more stable. 
+One out of the three data sets reported in [1] -- the Academic Data Set -- was made public by [AMiner](https://www.aminer.cn/citation), which consists of information about papers published in a recent few decades. We keep only those papers published between 1980 and 2015 (included), and we remove from the data those researchers with less than 15 publications in total and conferences with less than 20 participants in total, so that the resulting dynamic network becomes more stable. 
 
 In this data set, labels are extracted for each researcher indicating the research fields he/she focuses on. We manually specify a set of representing conferences for each research field, and try to find out for a researcher in which field he/she publishes most of his/her work, given a certain time step.
 
