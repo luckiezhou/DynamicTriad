@@ -13,7 +13,7 @@ As an effort to take evolution patterns directly into account, we try to model s
 In a social network, *the Triadic Closure Process* describes the scenario when users are introduced to each other by their common friend. Obviously, the probability of two users to be acquainted with each other depends on the eagerness of their common friends to introduce them to each other, and we call such eagerness *social strategy* of the user (indeed, the name is not precise as what we discuss here reflects only a part of the literal meaning of social strategy). It is natural to assume that the *social strategy* varies for each user (vertex) in the network. As shown in the figure below, user A tends to introduce new links between his/her friends while user B tends to keep the relations unchanged. 
 
 <div align="center">
-    <img src="https://github.com/luckiezhou/DynamicTriad/blob/master/docs/image.png"><br><br>
+    <img src="https://raw.githubusercontent.com/luckiezhou/DynamicTriad/master/docs/image.png"><br><br>
 </div>
 
 ## Dynamic Network Embedding by Modeling Triadic Closure Process
