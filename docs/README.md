@@ -1,5 +1,3 @@
-# Dynamic Triad: A Dynamic Network Embedding Algorithm Modeling the Triad Closure Process
-
 ## Dynamic Network Embedding
 
 The goal of so-called "network embedding" is to project each vertex in a graph to a vector in a low-dimensional space. The task attracts considerable research efforts recently, and often serves as a basic feature extraction method for more complex problems. Existing work on network embedding focus mainly on static networks, however, most real-world networks regards evolution as their natural characteristics, that is, real-world networks are usually dynamic. As far as we know, there is no widely-accepted dynamic network embedding algorithm that is proved to work well in practice.
