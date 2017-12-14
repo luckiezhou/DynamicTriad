@@ -47,7 +47,7 @@ A building script ```build.sh``` is available in the root directory of this proj
 ```
 bash build.sh
 ```
-Before running the actual building commands, you are required by the script to configure some of the environment variables. You can either use the default value or specify your custom installation paths for certain libraries. For example,
+Before running the actual building commands, the script requires you to configure some of the environment variables. You can either use the default values or specify your custom installation paths for certain libraries. For example,
 ```
 PYTHON_LIBRARY? (default: /usr/lib64/libpython2.7.so.1.0, use a space ' ' to leave it empty) 
 PYTHON_INCLUDE_DIR? (default: /usr/include/python2.7, use a space ' ' to leave it empty) 
