@@ -22,7 +22,9 @@ The core idea of paper [1] is to model the willingness of a user to introduce hi
 
 The proposed algorithm defines a triadic loss for each open triangle (two edges among three vertices),  computed according to the relative positions of the three vertices in the latent space, the weight of edges between them and whether the open triangle closes in the next time step. Specifically, given unlinked users i and j who share a common friend k at time step t, the probability of the triangle to close is
 
-[formula]
+*(Note that equations in this document are handled with a dirty workaround, as there is no native support, that is not guaranteed to work in the future, contact me if the equations fail to present.)*
+
+$$ \lambda $$
 
 where 
 
