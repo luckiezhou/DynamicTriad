@@ -1,6 +1,6 @@
 ---
 title: DynamicTriad
-description: Dynamic Network Embedding by Modeling Triadic Closure Process [1]
+description: Dynamic Network Embedding by Modeling Triadic Closure Process
 ---
 
 ### Dynamic Network Embedding
