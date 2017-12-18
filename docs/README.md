@@ -22,11 +22,13 @@ The core idea of paper [1] is to model the willingness of a user to introduce hi
 
 The proposed algorithm defines a triadic loss for each open triangle (two edges among three vertices),  computed according to the relative positions of the three vertices in the latent space, the weight of edges between them and whether the open triangle closes in the next time step. Specifically, given unlinked users i and j who share a common friend k at time step t, the probability of the triangle to close is
 
-*(Note that equations in this document are handled with a dirty workaround, as there is no native support, that is not guaranteed to work in the future, contact me if the equations fail to present.)*
+$$ P_{tr}^t(i,j,k) = \frac{1}{1+\exp(-\langle \mathbf{\theta},\mathbf{x}_{ijk}^t \rangle)} $$
 
-$$ \lambda $$
+where
 
-where 
+$$ \mathbf{x}_{ijk}^t = w_{ik}^t * (\mathbf{u}_k^t - \mathbf{u}_i^t) + w_{jk}^t * (\mathbf{u}_k^t - \mathbf{u}_j^t) $$
+
+is determined by the weight of the edges and relative position of vertex embedding vectors in the triangle.  
 
 
 The overall loss for triadic closure process is defined by summing up the negative log closing probability of open triangles sampled in the network. Together with the basic assumptions of social homophily and temporal smoothness, we define a loss function for each assumption and convert the embedding task into an optimization problem. The optimization problem can be effectively solved with EM algorithm. Refer to [1] for details about the loss function.
