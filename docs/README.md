@@ -1,5 +1,5 @@
 ---
-title: DynamicTriad
+title: DynamicTriad test
 description: Dynamic Network Embedding by Modeling Triadic Closure Process [1]
 ---
 
