@@ -41,7 +41,7 @@ Before building the project, we recommend switching the working directory to the
 ```
 cd <dynamic_triad_root>
 ```
-Note that all the commands presented in the rest of this documentation assume your current working directory is ``<dynamic_triad_root>``.
+Note that we assume ``<dynamic_triad_root>`` as your working directory in all the commands presented in the rest of this documentation.
 
 A building script ```build.sh``` is available in the root directory of this project, simplifying the building process to executing a single command
 ```
@@ -140,7 +140,7 @@ Some of the arguments may require extra explanation:
 - ``--beta-smooth/--beta-triad``, two hyper parameters used in the model, see reference [1] for details about the hyper parameters of DynamicTriad. Empirically, the hyper parameters need to be tuned in order to achieve the best performance, and the best choice depends on the task and the stability of the target dynamic network.
 - ``-l/--stepsize`` and ``-s/--stepstride``, see [Time Model](#time-model) for details.
 - ``--cachefn``, sometimes you find that the data preprocessing becomes intolerably time consuming (see [Time Model](#time-model)), and a solution is to specify ``--cachefn`` so that the program creates or uses a cache file of the preprocessed data. The cache file consists of two parts -- a file named ``<--cachefile>.cache`` as well as a file named ``<--cachefile>.cache.args``. If you have changed your configuration for preprocessing, remove ``<--cachefile>.cache.args`` and the cache will be regenerated.
-- ``--validation``, the four tasks available for validation is as defined in [1], please refer to the paper for details.
+- ``--validation``, the four tasks available for validation are as defined in [1], please refer to the paper for details.
 
 ### Demo
 
