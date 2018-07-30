@@ -40,6 +40,9 @@ export EIGEN3_INCLUDE_DIR=$eigeninc
 boostroot=$(ask "BOOST_ROOT?" "")
 export BOOST_ROOT=$boostroot
 
+boost_pylib=$(ask "name for boost_python library? (useful when boost_python cannot be detected by cmake)" "boost_python")
+export BOOST_PYTHON_LIBNAME=$boost_pylib
+
 echo building mygraph module ...
 rm -rf core/mygraph-build
 mkdir -p core/mygraph-build

@@ -14,7 +14,7 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 if(CMAKE_COMPILER_IS_GNUCXX)
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -DDEBUG")
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -DDEBUG -g")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2")
 else()
   MESSAGE(FATAL_ERROR "CMakeLists.txt has not been tested/written for your compiler.")
@@ -57,7 +57,7 @@ set_target_properties(dynamic_triad PROPERTIES PREFIX "" OUTPUT_NAME "dynamic_tr
 # assume the project main directory is ..
 include_directories(${CMAKE_SOURCE_DIR}/..)
 
-# respect user environment is the following variables are set
+# respect user environment if the following variables are set
 if((NOT "$ENV{PYTHON_LIBRARY}" STREQUAL "") AND (NOT
     "$ENV{PYTHON_INCLUDE_DIR}" STREQUAL ""))
     message("Using custom python path $ENV{PYTHON_LIBRARY} and $ENV{PYTHON_INCLUDE_DIR}")
@@ -93,7 +93,12 @@ if(Boost_FOUND)
   set(Boost_USE_STATIC_LIBS OFF)
   set(Boost_USE_MULTITHREADED ON)
   set(Boost_USE_STATIC_RUNTIME OFF)
-  find_package(Boost 1.54.0 COMPONENTS python REQUIRED)
+  find_package(Boost 1.54.0 COMPONENTS python)
+  if(NOT Boost_FOUND)
+      message("[Warning] boost_python not detected by cmake, we will continue
+      building because sometimes cmake fails to detect an existing
+      boost_python library")
+  endif()
 ELSEIF(NOT Boost_FOUND)
   MESSAGE(FATAL_ERROR "Unable to find correct Boost version. Did you set BOOST_ROOT?")
 ENDIF()
