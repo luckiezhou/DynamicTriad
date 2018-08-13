@@ -95,9 +95,14 @@ if(Boost_FOUND)
   set(Boost_USE_STATIC_RUNTIME OFF)
   find_package(Boost 1.54.0 COMPONENTS python)
   if(NOT Boost_FOUND)
-      message("[Warning] boost_python not detected by cmake, we will continue
-      building because sometimes cmake fails to detect an existing
-      boost_python library")
+      if(NOT "$ENV{BOOST_PYTHON_LIBNAME}" STREQUAL "")
+          message("boost_python not detected by cmake, trying custom lib name
+          $ENV{BOOST_PYTHON_LIBNAME}")
+      else()
+          message(FATAL_ERROR "boost_python not detected by cmake, try setting
+          environment variable $BOOST_PYTHON_LIBNAME for custom library name")
+      endif()
+      set (Boost_LIBRARIES "${Boost_LIBRARIES}-l boost_python-2.7")
   endif()
 ELSEIF(NOT Boost_FOUND)
   MESSAGE(FATAL_ERROR "Unable to find correct Boost version. Did you set BOOST_ROOT?")

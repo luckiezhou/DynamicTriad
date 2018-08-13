@@ -61,7 +61,7 @@ if(Boost_FOUND)
   find_package(Boost 1.54.0 COMPONENTS python)
   if(NOT Boost_FOUND)
       if(NOT "$ENV{BOOST_PYTHON_LIBNAME}" STREQUAL "")
-          message("boost_python node detected by cmake, trying custom lib name
+          message("boost_python not detected by cmake, trying custom lib name
           $ENV{BOOST_PYTHON_LIBNAME}")
       else()
           message(FATAL_ERROR "boost_python not detected by cmake, try setting
