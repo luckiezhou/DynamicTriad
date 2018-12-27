@@ -161,7 +161,7 @@ bash scripts/demo.sh
 
 ### Time Model
 
-TL;DR: If you would like the main script to treat your graphs exactly as they are specified in your input files, please leave the arguments ``-l`` and ``-s`` to their default value.
+TL;DR: If you would like the main script to treat your graphs exactly as they are specified in your input files, please leave the arguments ``-l`` and ``-s`` to their default values.
 
 For flexibility, a part of the data preprocessing functionalities are included into our main script. Specifically, if we call each graph file in the input directory a **unit graph**, our main script provides interfaces to create the graph for each time step out of these unit graphs.
 
@@ -186,6 +186,8 @@ One out of the three data sets reported in [1] -- the Academic Data Set -- was m
 In this data set, labels are extracted for each researcher indicating the research fields he/she focuses on. We manually specify a set of representing conferences for each research field, and try to find out for a researcher in which field he/she publishes most of his/her work, given a certain time step.
 
 A toy data is included in this project as ``data/academic_toy.pickle``, which was originally the ``ACM-Citation-network V8`` data set from AMiner, and was preprocessed as we describe above, with the only difference that the vertices are further sampled to a limited size of 2000. And our full preprocessing result can be downloaded [here](https://drive.google.com/file/d/1AF5soBDb2AbAhCNKUeYa_om6IcldEU83/view?usp=sharing).
+
+__Update__: For those who are interested in the academic dataset and wish to avoid the bothering building process, the dataset in clean format is released [here](https://drive.google.com/file/d/1vzvVhZ-FIY3iY3nBQlW77GRfJO0o_Ugg/view?usp=sharing) (Please cite the [original publisher](https://www.aminer.cn/citation) of the data if you wish use the dataset). See readme.txt in the package for detailed information, and feel free to contact me if there are anything wrong or unclarified in the data.
 
 ### Performance
 
