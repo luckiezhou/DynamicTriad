@@ -342,7 +342,7 @@ class TestSampler(object):
     def _sample_changed_link_prediction(self, begin, end, size, name=""):
         return self._sample_changed_link_classify(begin, end, size, intv=1)
 
-    def __none(self, begin, end, size=None):
+    def __none(self, begin, end, size=None, name=""):
         return [[], []]
 
     def __unknown(self, begin, end, size=None, name=""):
