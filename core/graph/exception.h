@@ -8,11 +8,19 @@
 #include <sstream>
 
 template <typename T>
+std::string _to_string(T key)
+{
+    std::ostringstream oss;
+    oss << key;
+    return oss.str();
+}
+
+template <typename T>
 class DuplicateKeyException : public std::runtime_error
 {
 public:
     DuplicateKeyException(const std::string& where, const std::string& msg, T key)
-        : std::runtime_error(where + ": " + msg + " " + static_cast<std::ostringstream&>(std::ostringstream() << key).str()), 
+        : std::runtime_error(where + ": " + msg + " " + _to_string<T>(key)), 
             key(key), msg(msg), where(where) {}
     T key;
     std::string msg;
@@ -24,7 +32,7 @@ class InvalidKeyException : public std::runtime_error
 {
 public:
     InvalidKeyException(const std::string& where, const std::string& msg, T key)
-        : std::runtime_error(where + ": " + msg + " " + static_cast<std::ostringstream&>(std::ostringstream() << key).str()),
+        : std::runtime_error(where + ": " + msg + " " + _to_string<T>(key)),
             key(key), msg(msg), where(where) {}
 
     T key;

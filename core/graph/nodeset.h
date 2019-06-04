@@ -213,6 +213,7 @@ private:
         default:
             assert(0);
         }
+        return res;  // to avoid compiler warnings
     }
 
     std::pair<iterator, bool> insertex(const key_type& key, DUPMODE dupmode = DUP_OVERWRITE)

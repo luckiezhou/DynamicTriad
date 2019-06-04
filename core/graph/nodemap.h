@@ -337,6 +337,7 @@ private:
         default:
             assert(0);
         }
+        return res;  // to avoid compiler warnings
     }
 
     inline std::pair<iterator, bool> insertex(value_type&& val, DUPMODE dupmode)
